@@ -1,6 +1,6 @@
 #include<string.h>
 
-#define MEMORYSIZE 1024*1024
+#define MEMORYSIZE 1L<<32
 
 static uint8_t memory[MEMORYSIZE] = {0};
 

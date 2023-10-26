@@ -54,7 +54,7 @@ typedef struct _decoded_t decoded_t;
 
 // レジスタ
 struct _register__t {
-	uint8_t val;
+	uint32_t val;
 };
 typedef struct _register__t register__t;
 
