@@ -34,6 +34,7 @@
 #include<assert.h>
 
 #include"__memory_emu.c"
+#include"__program_counter_emu.c"
 
 enum OPCODE {
 	ADD   = 0b00001,
@@ -64,15 +65,15 @@ typedef void (*op_func)(decoded_t);
 // 汎用レジスタ
 static register__t generalRegisters[16] = {0};
 
-decoded_t decode(uint32_t ins)
+decoded_t decode(program_t prog)
 {
 	decoded_t t;
 
-	t.opcode = (0xf8000000 & ins) >> 27;
-	t.regA   = (0x07800000 & ins) >> 23;
-	t.regB   = (0x00780000 & ins) >> 19;
-	t.dst    = (0x00078000 & ins) >> 15;
-	t.offset = 0x00007fff & ins;
+	t.opcode = (0xf8000000 & prog) >> 27;
+	t.regA   = (0x07800000 & prog) >> 23;
+	t.regB   = (0x00780000 & prog) >> 19;
+	t.dst    = (0x00078000 & prog) >> 15;
+	t.offset = 0x00007fff & prog;
 
 	return t;
 }
@@ -101,7 +102,7 @@ void load_op(decoded_t decoded)
 	offset = decoded.offset;
 
 	// dstRegの値 + offsetにあるメモリにアクセス
-	uint8_t memory = memory_fetch((memory_address_t)(dstReg.val + offset));
+	uint8_t memory = memory_fetch(DATA, (memory_address_t)(dstReg.val + offset));
 	// op1Regの値をメモリの値で更新
 	op1Reg.val = memory;
 
@@ -141,6 +142,7 @@ op_func assign_op_func(decoded_t decoded)
 int test()
 {
 	uint32_t ins;
+	program_t prog;
 	decoded_t decoded;
 	op_func operator;
 
@@ -149,34 +151,56 @@ int test()
 
 	// r1 <- 0(r0)
 	ins = 0b00010000100000000000000000000000;
-	decoded = decode(ins);
-	operator = assign_op_func(decoded);
-	operator(decoded);
-
+	program_memory[0] = (uint8_t)(ins & 0x000000ff);
+	program_memory[1] = (uint8_t)((ins & 0x0000ff00) >> 8);
+	program_memory[2] = (uint8_t)((ins & 0x00ff0000) >> 16);
+	program_memory[3] = (uint8_t)((ins & 0xff000000) >> 24);
 	// r2 <- 1(r0)
 	ins = 0b00010001000000000000000000000001;
-	decoded = decode(ins);
-	operator = assign_op_func(decoded);
-	operator(decoded);
-
+	program_memory[4] = (uint8_t)(ins & 0x000000ff);
+	program_memory[5] = (uint8_t)((ins & 0x0000ff00) >> 8);
+	program_memory[6] = (uint8_t)((ins & 0x00ff0000) >> 16);
+	program_memory[7] = (uint8_t)((ins & 0xff000000) >> 24);
 	// r3 <- r1 + r2
 	ins = 0b00001000100100011000000000000000;
-	decoded = decode(ins);
-	operator = assign_op_func(decoded);
-	operator(decoded);
-
+	program_memory[8] = (uint8_t)(ins & 0x000000ff);
+	program_memory[9] = (uint8_t)((ins & 0x0000ff00) >> 8);
+	program_memory[10] = (uint8_t)((ins & 0x00ff0000) >> 16);
+	program_memory[11] = (uint8_t)((ins & 0xff000000) >> 24);
 	// 2(r0) <- r3
 	ins = 0b00011000000110000000000000000010;
-	decoded = decode(ins);
-	operator = assign_op_func(decoded);
-	operator(decoded);
+	program_memory[12] = (uint8_t)(ins & 0x000000ff);
+	program_memory[13] = (uint8_t)((ins & 0x0000ff00) >> 8);
+	program_memory[14] = (uint8_t)((ins & 0x00ff0000) >> 16);
+	program_memory[15] = (uint8_t)((ins & 0xff000000) >> 24);
 
+	prog = issue_next_program();
+//	printf("%x\n", prog);
+	decoded = decode(prog);
+	operator = assign_op_func(decoded);
 //	printf("opcode: %#x\n", decoded.opcode);
 //	printf("regA  : %#x\n", decoded.regA);
 //	printf("regB  : %#x\n", decoded.regB);
 //	printf("dst   : %#x\n", decoded.dst);
 //	printf("offset: %#x\n", decoded.offset);
-	assert(memory_fetch(2) == 5);
+	operator(decoded);
+
+	prog = issue_next_program();
+	decoded = decode(prog);
+	operator = assign_op_func(decoded);
+	operator(decoded);
+
+	prog = issue_next_program();
+	decoded = decode(prog);
+	operator = assign_op_func(decoded);
+	operator(decoded);
+
+	prog = issue_next_program();
+	decoded = decode(prog);
+	operator = assign_op_func(decoded);
+	operator(decoded);
+
+	assert(memory_fetch(DATA, 2) == 5);
 	return 0;
 }
 
