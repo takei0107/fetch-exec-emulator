@@ -87,7 +87,7 @@ void add_op(decoded_t decoded)
 
 	dstReg = generalRegisters[decoded.dst];
 	dstReg.val = op1Reg.val + op2Reg.val;
-	//printf("%d %d %d\n", dstReg.val, op1Reg.val, op2Reg.val);
+	printf("%d %d %d\n", dstReg.val, op1Reg.val, op2Reg.val);
 
 	generalRegisters[decoded.dst] = dstReg;
 }
@@ -122,6 +122,20 @@ void store_op(decoded_t decoded)
 	memory_store((memory_address_t)(op1Reg.val + offset), op2Reg.val);
 }
 
+void jump_op(decoded_t decoded)
+{
+	register__t op1Reg;
+	uint16_t offset;
+	uint32_t toPtr;
+
+	op1Reg = generalRegisters[decoded.regA];
+	offset = decoded.offset;
+
+	toPtr = op1Reg.val + offset;
+
+	ptr = toPtr;
+}
+
 op_func assign_op_func(decoded_t decoded)
 {
 	op_func op = NULL;
@@ -134,6 +148,9 @@ op_func assign_op_func(decoded_t decoded)
 			break;
 		case STORE:
 			op = store_op;
+			break;
+		case JUMP:
+			op = jump_op;
 			break;
 	}
 	return op;
@@ -150,57 +167,134 @@ int test()
 	memory_store(1, 3);
 
 	// r1 <- 0(r0)
+	// レジスタ1にレジスタ0の値+オフセット(0)のアドレスのメモリの値(addr = 0, val = 2)をロード
 	ins = 0b00010000100000000000000000000000;
 	program_memory[0] = (uint8_t)(ins & 0x000000ff);
 	program_memory[1] = (uint8_t)((ins & 0x0000ff00) >> 8);
 	program_memory[2] = (uint8_t)((ins & 0x00ff0000) >> 16);
 	program_memory[3] = (uint8_t)((ins & 0xff000000) >> 24);
 	// r2 <- 1(r0)
+	// レジスタ2にレジスタ0の値+オフセット(1)のアドレスのメモリの値(addr = 1, val = 3)をロード
 	ins = 0b00010001000000000000000000000001;
 	program_memory[4] = (uint8_t)(ins & 0x000000ff);
 	program_memory[5] = (uint8_t)((ins & 0x0000ff00) >> 8);
 	program_memory[6] = (uint8_t)((ins & 0x00ff0000) >> 16);
 	program_memory[7] = (uint8_t)((ins & 0xff000000) >> 24);
-	// r3 <- r1 + r2
+	// r3 <- r1 + r2 = 5
+	// レジスタ1の値(2) + レジスタ2の値(3)をレジスタ3にストア
 	ins = 0b00001000100100011000000000000000;
 	program_memory[8] = (uint8_t)(ins & 0x000000ff);
 	program_memory[9] = (uint8_t)((ins & 0x0000ff00) >> 8);
 	program_memory[10] = (uint8_t)((ins & 0x00ff0000) >> 16);
 	program_memory[11] = (uint8_t)((ins & 0xff000000) >> 24);
 	// 2(r0) <- r3
+	// レジスタ3の値(5)をレジスタ0の値+オフセット(2)のアドレスにストア
 	ins = 0b00011000000110000000000000000010;
 	program_memory[12] = (uint8_t)(ins & 0x000000ff);
 	program_memory[13] = (uint8_t)((ins & 0x0000ff00) >> 8);
 	program_memory[14] = (uint8_t)((ins & 0x00ff0000) >> 16);
 	program_memory[15] = (uint8_t)((ins & 0xff000000) >> 24);
 
+	// jump 27(r3)
+	// レジスタ3の値(5)+オフセット(27)のアドレスの命令にジャンプ
+	ins = 0b00100001100000000000000000011011;
+	program_memory[16] = (uint8_t)(ins & 0x000000ff);
+	program_memory[17] = (uint8_t)((ins & 0x0000ff00) >> 8);
+	program_memory[18] = (uint8_t)((ins & 0x00ff0000) >> 16);
+	program_memory[19] = (uint8_t)((ins & 0xff000000) >> 24);
+
+	// r4 <- 0(r1)
+	// レジスタ4にレジスタ1の値(2)+オフセット(0)のアドレスのメモリの値(addr = 2, val = 5)をロード
+	ins = 0b00010010000000001000000000000000;
+	program_memory[32] = (uint8_t)(ins & 0x000000ff);
+	program_memory[33] = (uint8_t)((ins & 0x0000ff00) >> 8);
+	program_memory[34] = (uint8_t)((ins & 0x00ff0000) >> 16);
+	program_memory[35] = (uint8_t)((ins & 0xff000000) >> 24);
+
+	// r5 <- r1 + r4
+	// レジスタ1の値(2) + レジスタ4の値(5)をレジスタ5にストア
+	ins = 0b00001000101000101000000000000000;
+	program_memory[36] = (uint8_t)(ins & 0x000000ff);
+	program_memory[37] = (uint8_t)((ins & 0x0000ff00) >> 8);
+	program_memory[38] = (uint8_t)((ins & 0x00ff0000) >> 16);
+	program_memory[39] = (uint8_t)((ins & 0xff000000) >> 24);
+
+	// 2(r0) <- r5
+	// レジスタ5の値(7)をレジスタ0の値+オフセット(3)のアドレスにストア
+	ins = 0b00011000001010000000000000000011;
+	program_memory[40] = (uint8_t)(ins & 0x000000ff);
+	program_memory[41] = (uint8_t)((ins & 0x0000ff00) >> 8);
+	program_memory[42] = (uint8_t)((ins & 0x00ff0000) >> 16);
+	program_memory[43] = (uint8_t)((ins & 0xff000000) >> 24);
+
 	prog = issue_next_program();
-//	printf("%x\n", prog);
 	decoded = decode(prog);
 	operator = assign_op_func(decoded);
+	operator(decoded);
+
+	prog = issue_next_program();
+	decoded = decode(prog);
+	operator = assign_op_func(decoded);
+	operator(decoded);
+
+	prog = issue_next_program();
+	decoded = decode(prog);
+	operator = assign_op_func(decoded);
+	operator(decoded);
+
+	prog = issue_next_program();
+	decoded = decode(prog);
+	operator = assign_op_func(decoded);
+	operator(decoded);
+
+	prog = issue_next_program();
+	decoded = decode(prog);
+	operator = assign_op_func(decoded);
+	operator(decoded);
+
+	// jumped
+	printf("%x\n", ptr);
+
+	prog = issue_next_program();
+	decoded = decode(prog);
+	printf("opcode: %#x\n", decoded.opcode);
+	printf("regA  : %#x\n", decoded.regA);
+	printf("regB  : %#x\n", decoded.regB);
+	printf("dst   : %#x\n", decoded.dst);
+	printf("offset: %#x\n", decoded.offset);
+	operator = assign_op_func(decoded);
+	operator(decoded);
+
+	prog = issue_next_program();
+	decoded = decode(prog);
+	printf("opcode: %#x\n", decoded.opcode);
+	printf("regA  : %#x\n", decoded.regA);
+	printf("regB  : %#x\n", decoded.regB);
+	printf("dst   : %#x\n", decoded.dst);
+	printf("offset: %#x\n", decoded.offset);
+	operator = assign_op_func(decoded);
+	operator(decoded);
+
+	printf("reg5.val=%x\n", generalRegisters[5].val);
+
+	prog = issue_next_program();
+	decoded = decode(prog);
+	printf("opcode: %#x\n", decoded.opcode);
+	printf("regA  : %#x\n", decoded.regA);
+	printf("regB  : %#x\n", decoded.regB);
+	printf("dst   : %#x\n", decoded.dst);
+	printf("offset: %#x\n", decoded.offset);
+	operator = assign_op_func(decoded);
+	operator(decoded);
+
 //	printf("opcode: %#x\n", decoded.opcode);
 //	printf("regA  : %#x\n", decoded.regA);
 //	printf("regB  : %#x\n", decoded.regB);
 //	printf("dst   : %#x\n", decoded.dst);
 //	printf("offset: %#x\n", decoded.offset);
-	operator(decoded);
 
-	prog = issue_next_program();
-	decoded = decode(prog);
-	operator = assign_op_func(decoded);
-	operator(decoded);
-
-	prog = issue_next_program();
-	decoded = decode(prog);
-	operator = assign_op_func(decoded);
-	operator(decoded);
-
-	prog = issue_next_program();
-	decoded = decode(prog);
-	operator = assign_op_func(decoded);
-	operator(decoded);
-
-	assert(memory_fetch(DATA, 2) == 5);
+	printf("%d\n", memory_fetch(DATA, 3));
+	assert(memory_fetch(DATA, 3) == 7);
 	return 0;
 }
 
