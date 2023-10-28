@@ -1,8 +1,8 @@
 CC = gcc
-BIN = cpu.out
+FLAGS = -Wall -mcmodel=large -I./includes
 
-cpu.out: *.c
-	$(CC) -o $(BIN) __cpu_emu.c -mcmodel=large
+PROG = cpu.out
+SRCS = emulator.c data_path.c controller.c __*.c
 
-test: cpu.out
-	./$(BIN)
+$(PROG): $(SRCS)
+	$(CC) $(FLAGS) $(SRCS) -o $(PROG)

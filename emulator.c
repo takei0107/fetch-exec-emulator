@@ -1,6 +1,5 @@
 #include"data_path.h"
 
-
 int main()
 {
 	data_path_init_params params;
