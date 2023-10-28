@@ -2,6 +2,7 @@
 #include"__memory.h"
 #include"__program_counter.h"
 #include"__adder.h"
+#include"__ins_decoder.h"
 
 // 32bit汎用レジスタで表現できるサイズのMAX
 #define MEMORY_SIZE_ALL (1L << 32)
@@ -43,6 +44,10 @@ int main()
 	memory_all_t memory_all;
 	data_path_t data_path;
 
+	memory_addr_t pgm_ctr_ptr;
+	ins_raw_t ins_raw;
+	ins_decoded_t decoded;
+
 	// 初期処理
 	// 1. メモリ初期化
 	// 2. 命令を命令メモリにロード
@@ -57,7 +62,9 @@ int main()
 	data_path = init_data_path(memory_all, test_start);
 
 	// クロック/ループ一回
-	while(data_path.pgm_ctr.ptr < test_end) {
-
+	while((pgm_ctr_ptr = data_path.pgm_ctr.ptr) < test_end) {
+		data_path.pgm_ctr.ptr = adder_perform(data_path.adder, pgm_ctr_ptr);
+		ins_raw = fetch_ins(data_path.memory_pgm, pgm_ctr_ptr);
+		decoded = decode(ins_raw);
 	}
 }
