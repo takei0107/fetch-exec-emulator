@@ -14,7 +14,7 @@ ins_raw_t fetch_ins(memory_area_t *memory, memory_addr_t addr)
 	mem = (memory_t *)malloc(sizeof(memory_t) * ins_size);
 
 	for(i = 0; i< ins_size; i++) {
-		mem[i] = memory_area_fetch(memory, addr);
+		mem[i] = memory_area_fetch(memory, addr + i);
 	}
 
 	ins = *(ins_raw_t *)mem;

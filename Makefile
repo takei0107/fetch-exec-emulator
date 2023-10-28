@@ -1,8 +1,20 @@
 CC = gcc
 FLAGS = -Wall -mcmodel=large -I./includes
 
-PROG = cpu.out
-SRCS = emulator.c data_path.c controller.c __*.c
+SRCS = data_path.c controller.c __*.c
 
-$(PROG): $(SRCS)
-	$(CC) $(FLAGS) $(SRCS) -o $(PROG)
+PROG = cpu.out
+PROGSRCS = $(SRCS) emulator.c
+
+TEST = ./test/test.out
+TESTSRCS = $(SRCS) ./test/main.c
+
+
+test: $(TEST)
+	./$(TEST)
+
+$(TEST): $(TESTSRCS)
+	$(CC) $(FLAGS) $(TESTSRCS) -o $(TEST)
+
+$(PROG): $(PROGSRCS)
+	$(CC) $(FLAGS) -DNDEBUG $(PROGSRCS) -o $(PROG)

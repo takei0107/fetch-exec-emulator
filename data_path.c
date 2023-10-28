@@ -1,5 +1,11 @@
 #include"data_path.h"
 
+#include<assert.h>
+
+#ifndef NDEBUG
+#include<stdio.h>
+#endif
+
 // 32bit汎用レジスタで表現できるサイズのMAX
 #define MEMORY_SIZE_ALL (1L << 32)
 // 命令メモリサイズ
@@ -44,13 +50,28 @@ int data_path_exec(data_path_t data_path)
 	memory_addr_t pgm_ctr_ptr, pgm_end_addr;
 	ins_raw_t ins_raw;
 	ins_decoded_t decoded;
-
 	pgm_end_addr = data_path.pgm_ctr.pgm_end_addr;
+
 	// クロック/ループ一回
 	while((pgm_ctr_ptr = data_path.pgm_ctr.ptr) < pgm_end_addr) {
 		data_path.pgm_ctr.ptr = adder_perform(data_path.adder, pgm_ctr_ptr);
 		ins_raw = fetch_ins(data_path.memory_pgm, pgm_ctr_ptr);
 		decoded = decode(ins_raw);
+
+#ifndef NDEBUG
+		// debug
+		printf("##############################################\n");
+		printf("ins:    0x%08x\n", ins_raw);
+		printf("opcode: 0x%08x\n", decoded.opcode);
+		printf("regA:   0x%08x\n", decoded.regA);
+		printf("regB:   0x%08x\n", decoded.regB);
+		printf("dst:    0x%08x\n", decoded.dst);
+		printf("offset: 0x%08x\n", decoded.offset);
+		printf("##############################################\n");
+		printf("\n");
+#endif
+
 	}
 	return 0;
 }
+
