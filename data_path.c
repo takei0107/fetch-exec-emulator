@@ -1,8 +1,7 @@
 #include"data_path.h"
 
-#include<assert.h>
-
 #ifndef NDEBUG
+#include<assert.h>
 #include<stdio.h>
 #endif
 
@@ -28,9 +27,11 @@ data_path_t init_data_path(data_path_init_params params)
 {
 	data_path_t data_path;
 	memory_all_t memory_all;
+	register_unit_t register_unit;
 	
 	// レジスタユニット初期化
-	data_path.register_unit = init_register_unit();
+	register_unit = init_register_unit();
+	data_path.register_unit = &register_unit;
 
 	// メモリ初期化
 	memory_all = init_memory_all();
@@ -41,6 +42,8 @@ data_path_t init_data_path(data_path_init_params params)
 	data_path.pgm_ctr = program_counter_init(params.pgm_start_addr, params.pgm_end_addr);
 	// adder初期化
 	data_path.adder = adder_init(ADDER_STEP);
+
+	data_path.on_decoded = params.on_decoded;
 
 	return data_path;
 }

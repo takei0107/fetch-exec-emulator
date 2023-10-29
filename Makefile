@@ -1,9 +1,9 @@
 CC = gcc
 FLAGS = -Wall -mcmodel=large -I./includes
 
-SRCS = data_path.c controller.c __*.c
+SRCS = data_path.c controller.c cpu.c __*.c
 
-PROG = cpu.out
+PROG = emulator.out
 PROGSRCS = $(SRCS) emulator.c
 
 TEST = ./test/test.out
