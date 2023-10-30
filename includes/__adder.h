@@ -9,8 +9,8 @@ typedef struct {
 	uint32_t step;
 } adder_t;
 
-adder_t adder_init(const uint32_t step);
+adder_t *adder_init(const uint32_t step);
 
-memory_addr_t adder_perform(adder_t adder, memory_addr_t ptr);
+memory_addr_t adder_perform(adder_t *adder, memory_addr_t ptr);
 
 #endif

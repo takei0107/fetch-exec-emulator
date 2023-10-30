@@ -12,6 +12,6 @@ typedef struct {
 	memory_addr_t pgm_end_addr;
 } program_counter_t;
 
-program_counter_t program_counter_init(memory_addr_t pgm_start_addr, memory_addr_t pgm_end_addr);
+program_counter_t *program_counter_init(memory_addr_t pgm_start_addr, memory_addr_t pgm_end_addr);
 
 #endif

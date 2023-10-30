@@ -25,7 +25,7 @@ typedef struct {
 	CTR_SIGNAL signal;
 } register_unit_t;
 
-register_unit_t init_register_unit();
+register_unit_t *init_register_unit();
 
 void register_unit_signal_received(register_unit_t *register_unit, const CTR_SIGNAL signal);
 

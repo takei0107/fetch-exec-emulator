@@ -1,10 +1,13 @@
 #include<stdlib.h>
 
-#include"cpu.h"
+#include"../emulator.c"
+
+// 32bit汎用レジスタで表現できるサイズのMAX
+#define MEMORY_SIZE_ALL (1L << 32)
 
 int main()
 {
-	cpu_init_params params;
+	test_params_t test_param;
 	data_path_t data_path;
 
 	uint32_t ins;
@@ -12,30 +15,33 @@ int main()
 	// 疑似開始位置と終了位置
 	uint32_t test_start = 0x00000000;
 	uint32_t test_end = 0x00000010;
-	params.pgm_start_addr = test_start;
-	params.pgm_end_addr = test_end;
+	test_param.pgm_start_addr = test_start;
+	test_param.pgm_end_addr = test_end;
+	test_param.pgm_size = 4;
 
-	init_cpu(params);
-	data_path = cpu_get_data_path();
+	test_param.test_memory = init_memory(MEMORY_SIZE_ALL);
+
 	ins = 0b00010000100000000000000000000000;
-	data_path.memory_pgm->arr[0].val = (ins & 0x000000ff);
-	data_path.memory_pgm->arr[1].val = (ins & 0x0000ff00) >> 8;
-	data_path.memory_pgm->arr[2].val = (ins & 0x00ff0000) >> 16;
-	data_path.memory_pgm->arr[3].val = (ins & 0xff000000) >> 24;
+	test_param.test_memory[0].val = (ins & 0x000000ff);
+	test_param.test_memory[1].val = (ins & 0x0000ff00) >> 8;
+	test_param.test_memory[2].val = (ins & 0x00ff0000) >> 16;
+	test_param.test_memory[3].val = (ins & 0xff000000) >> 24;
 	ins = 0b00010001000000000000000000000001;
-	data_path.memory_pgm->arr[4].val = (ins & 0x000000ff);
-	data_path.memory_pgm->arr[5].val = (ins & 0x0000ff00) >> 8;
-	data_path.memory_pgm->arr[6].val = (ins & 0x00ff0000) >> 16;
-	data_path.memory_pgm->arr[7].val = (ins & 0xff000000) >> 24;
+	test_param.test_memory[4].val = (ins & 0x000000ff);
+	test_param.test_memory[5].val = (ins & 0x0000ff00) >> 8;
+	test_param.test_memory[6].val = (ins & 0x00ff0000) >> 16;
+	test_param.test_memory[7].val = (ins & 0xff000000) >> 24;
 	ins = 0b00001000100100011000000000000000;
-	data_path.memory_pgm->arr[8].val = (ins & 0x000000ff);
-	data_path.memory_pgm->arr[9].val = (ins & 0x0000ff00) >> 8;
-	data_path.memory_pgm->arr[10].val = (ins & 0x00ff0000) >> 16;
-	data_path.memory_pgm->arr[11].val = (ins & 0xff000000) >> 24;
+	test_param.test_memory[8].val = (ins & 0x000000ff);
+	test_param.test_memory[9].val = (ins & 0x0000ff00) >> 8;
+	test_param.test_memory[10].val = (ins & 0x00ff0000) >> 16;
+	test_param.test_memory[11].val = (ins & 0xff000000) >> 24;
 	ins = 0b00011000000110000000000000000010;
-	data_path.memory_pgm->arr[12].val = (ins & 0x000000ff);
-	data_path.memory_pgm->arr[13].val = (ins & 0x0000ff00) >> 8;
-	data_path.memory_pgm->arr[14].val = (ins & 0x00ff0000) >> 16;
-	data_path.memory_pgm->arr[15].val = (ins & 0xff000000) >> 24;
-	return data_path_exec(data_path);
+	test_param.test_memory[12].val = (ins & 0x000000ff);
+	test_param.test_memory[13].val = (ins & 0x0000ff00) >> 8;
+	test_param.test_memory[14].val = (ins & 0x00ff0000) >> 16;
+	test_param.test_memory[15].val = (ins & 0xff000000) >> 24;
+
+	return emulator_run(test_param, MEMORY_SIZE_ALL);
+
 }
