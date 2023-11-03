@@ -27,7 +27,7 @@
 #define SHIFT_OFFSET  (SHIFT_DST_REG - OFFSET_SIZE)
 
 typedef struct {
-    uint8_t opcode          : OPCODE_SIZE;
+	uint8_t opcode          : OPCODE_SIZE;
 	uint16_t offset         : OFFSET_SIZE;
 	register_number_t regA  : REG_A_SIZE;
 	register_number_t regB  : REG_B_SIZE;

@@ -13,7 +13,9 @@ typedef uint32_t register_val_t;
 
 typedef enum {
 	SIG_DEFAULT,
-	SIG_ADD
+	SIG_ADD,
+	SIG_STORE,
+	SIG_LOAD
 } CTR_SIGNAL;
 
 typedef struct {
@@ -36,11 +38,13 @@ typedef struct {
 	register_number_t regA;
 	register_number_t regB;
 	register_number_t dst;
-} register_unit_in;
+} register_unit_in_t;
 
 typedef struct {
-	register__t srcRegA;
-	register__t srcRegB;
-} register_unit_out;
+	register_val_t srcRegAVal;
+	register_val_t srcRegBVal;
+} register_unit_out_t;
+
+register_unit_out_t register_unit_perform(register_unit_t *register_unit, register_unit_in_t in);
 
 #endif

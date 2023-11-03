@@ -24,6 +24,6 @@ typedef struct {
 
 void init_cpu();
 
-data_path_t cpu_get_data_path();
+data_path_t *cpu_get_data_path();
 
 #endif

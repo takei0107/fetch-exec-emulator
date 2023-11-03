@@ -2,6 +2,7 @@
 #define OPERATION_H
 
 typedef enum {
+	NOOP  = 0b00000000,
 	ADD   = 0b00000001,
 	LOAD  = 0b00000010,
 	STORE = 0b00000011,

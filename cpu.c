@@ -6,12 +6,12 @@
 
 static cpu_t cpu;
 
-static void on_decoded(uint8_t opcode)
+static void on_decoded(ins_decoded_t decoded)
 {
 #ifndef NDEBUG
-	printf("on_decoded:opcode: %08x\n", opcode);
+	printf("on_decoded:opcode: %08b\n", decoded.opcode);
 #endif
-	controller_opcode_received(cpu.controller, opcode);
+	controller_opcode_received(cpu.controller, decoded.opcode);
 }
 
 void init_cpu(cpu_init_params_t params)
@@ -36,9 +36,9 @@ void init_cpu(cpu_init_params_t params)
 	cpu.controller = controller;
 }
 
-data_path_t cpu_get_data_path()
+data_path_t *cpu_get_data_path()
 {
-	return *(cpu.data_path);
+	return cpu.data_path;
 }
 
 

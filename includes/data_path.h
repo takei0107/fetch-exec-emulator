@@ -6,11 +6,12 @@
 #include"__adder.h"
 #include"__register.h"
 #include"__ins_decoder.h"
+#include"__multiplexer.h"
 
 // 命令アドレス加算用のアダーの1回で進むアドレス
 #define ADDER_STEP 4
 
-typedef void (*on_decoded_func)(uint8_t opcode);
+typedef void (*on_decoded_func)(ins_decoded_t decoded);
 
 typedef struct {
 	memory_t memory_pgm_ptr;
@@ -29,10 +30,13 @@ typedef struct {
 	program_counter_t *pgm_ctr;
 	adder_t *adder;
 	register_unit_t *register_unit;
+	multiplexer_t *m1;
+	multiplexer_t *m2;
+	multiplexer_t *m3;
 	on_decoded_func on_decoded;
 } data_path_t;
 
 data_path_t *init_data_path(data_path_init_params_t params);
-int data_path_exec(data_path_t data_path);
+int data_path_exec(data_path_t *data_path);
 
 #endif
