@@ -1,11 +1,15 @@
 #include"cpu.h"
 
 #include<stdlib.h>
+#include<string.h>
 
 // 32bit汎用レジスタで表現できるサイズのMAX
 #define MEMORY_SIZE_ALL (1L << 32)
 
 #ifndef NDEBUG
+
+#include<stdio.h>
+
 typedef struct {
 	memory_t test_memory;
 	size_t pgm_size;
@@ -55,7 +59,7 @@ size_t init_memory_size
 	cpu_init_params.memory_pgm_size = memory_pgm_size;
 
 	// 命令メモリ以降をデータメモリとして利用する。
-	cpu_init_params.memory_data_ptr = memory_pgm_start_ptr + memory_pgm_size;
+	cpu_init_params.memory_data_ptr = memory_pgm_start_ptr + (memory_pgm_size*4);
 	cpu_init_params.memory_data_size = init_memory_size - memory_pgm_size;
 
 	cpu_init_params.pgm_start_addr = pgm_start_addr;

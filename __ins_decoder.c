@@ -1,6 +1,6 @@
 #include"__ins_decoder.h"
 
-ins_decoded_t decode(ins_raw_t ins_raw)
+ins_decoded_t decode(memory_data_out_t ins_raw)
 {
 	ins_decoded_t decoded;
 

@@ -9,10 +9,7 @@
 #include"__multiplexer.h"
 
 typedef struct {
-	register_unit_t *register_unit;
-	multiplexer_t *m1;
-	multiplexer_t *m2;
-	multiplexer_t *m3;
+	data_path_t *data_path;
 } controller_t;
 
 controller_t *init_controller(data_path_t *data_path);

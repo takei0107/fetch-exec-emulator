@@ -7,6 +7,7 @@
 #include"__register.h"
 #include"__ins_decoder.h"
 #include"__multiplexer.h"
+#include"__alu.h"
 
 // 命令アドレス加算用のアダーの1回で進むアドレス
 #define ADDER_STEP 4

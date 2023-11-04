@@ -32,7 +32,11 @@ register_unit_out_t register_unit_perform(register_unit_t *register_unit, regist
 			out.srcRegAVal = register_unit->gp_register[in.regA].val;
 			out.srcRegBVal = register_unit->gp_register[in.dst].val;
 			break;
-			
+		case SIG_SAVE:
+			register_unit->gp_register[in.dst].val = in.data_in;
+			out.srcRegAVal = 0;
+			out.srcRegBVal = 0;
+			break;
 	}
 	return out;
 }

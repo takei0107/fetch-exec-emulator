@@ -1,4 +1,5 @@
 #include<stdlib.h>
+#include<assert.h>
 
 #include"../emulator.c"
 
@@ -20,13 +21,15 @@ int main()
 	test_param.pgm_size = 4;
 
 	test_param.test_memory = init_memory(MEMORY_SIZE_ALL);
+	test_param.test_memory[16].val = 4;
+	test_param.test_memory[17].val = 7;
 
-	ins = 0b00010000100000000000000000000000;
+	ins = 0b00010000000000001000000000000000;
 	test_param.test_memory[0].val = (ins & 0x000000ff);
 	test_param.test_memory[1].val = (ins & 0x0000ff00) >> 8;
 	test_param.test_memory[2].val = (ins & 0x00ff0000) >> 16;
 	test_param.test_memory[3].val = (ins & 0xff000000) >> 24;
-	ins = 0b00010001000000000000000000000001;
+	ins = 0b00010000000000010000000000000001;
 	test_param.test_memory[4].val = (ins & 0x000000ff);
 	test_param.test_memory[5].val = (ins & 0x0000ff00) >> 8;
 	test_param.test_memory[6].val = (ins & 0x00ff0000) >> 16;
@@ -42,6 +45,7 @@ int main()
 	test_param.test_memory[14].val = (ins & 0x00ff0000) >> 16;
 	test_param.test_memory[15].val = (ins & 0xff000000) >> 24;
 
-	return emulator_run(test_param, MEMORY_SIZE_ALL);
+	emulator_run(test_param, MEMORY_SIZE_ALL);
+	assert(test_param.test_memory[18].val == 11);
 
 }

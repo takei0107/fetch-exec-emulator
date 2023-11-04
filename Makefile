@@ -13,7 +13,7 @@ TESTSRCS = $(SRCS) ./test/main.c
 test: $(TEST)
 	./$(TEST)
 
-$(TEST): $(TESTSRCS)
+$(TEST): $(TESTSRCS) emulator.c
 	$(CC) $(FLAGS) $(TESTSRCS) -o $(TEST)
 
 $(PROG): $(PROGSRCS)

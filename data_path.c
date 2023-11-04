@@ -1,6 +1,7 @@
 #include"data_path.h"
 
 #include<stdlib.h>
+#include<stdbool.h>
 
 #ifndef NDEBUG
 #include<assert.h>
@@ -37,12 +38,13 @@ data_path_t *init_data_path(data_path_init_params_t params)
 int data_path_exec(data_path_t *data_path)
 {
 	memory_addr_t pgm_ctr_ptr, pgm_end_addr;
-	ins_raw_t ins_raw;
+	memory_data_out_t ins_raw, memory_data_out;
 	ins_decoded_t decoded;
 	register_unit_in_t register_unit_in;
 	register_unit_out_t register_unit_out;
+	multiplexer_in_out_t multiplexer_out;
+	alu_out_t alu_out;
 	data_in_t data_in = 0;
-
 	
 	pgm_end_addr = data_path->pgm_ctr->pgm_end_addr;
 
@@ -53,6 +55,7 @@ int data_path_exec(data_path_t *data_path)
 		decoded = decode(ins_raw);
 #ifndef NDEBUG
 		// debug
+		printf("\n");
 		printf("##############################################\n");
 		printf("ins:    0x%08x\n", ins_raw);
 		printf("opcode: 0x%08x\n", decoded.opcode);
@@ -61,7 +64,6 @@ int data_path_exec(data_path_t *data_path)
 		printf("dst:    0x%08x\n", decoded.dst);
 		printf("offset: 0x%08x\n", decoded.offset);
 		printf("##############################################\n");
-		printf("\n");
 #endif
 		data_path->on_decoded(decoded);
 
@@ -71,7 +73,28 @@ int data_path_exec(data_path_t *data_path)
 		register_unit_in.dst = decoded.dst;
 
 		register_unit_out = register_unit_perform(data_path->register_unit, register_unit_in);
-		multiplexer_data_received(data_path->m2, register_unit_out.srcRegAVal, (multiplexer_in_out_t)decoded.offset);
+		multiplexer_out = multiplexer_data_received(data_path->m2, register_unit_out.srcRegBVal, (multiplexer_in_out_t)decoded.offset);
+
+
+		alu_out = alu_perform(register_unit_out.srcRegAVal, multiplexer_out, (OPCODE)decoded.opcode);
+
+		memory_data_out = data_memory_perform(data_path->memory_data, alu_out, register_unit_out.srcRegBVal);
+		if ((OPCODE)decoded.opcode == STORE) {
+			continue;
+		}
+
+		multiplexer_out = multiplexer_data_received(data_path->m3, memory_data_out, alu_out);
+
+		if ((OPCODE)decoded.opcode == ADD || (OPCODE)decoded.opcode == LOAD) {
+			register_unit_signal_received(data_path->register_unit, SIG_SAVE);
+			
+			register_unit_in.data_in = multiplexer_out;
+			register_unit_in.dst = decoded.dst;
+
+			register_unit_perform(data_path->register_unit, register_unit_in);
+		}
+
+		
 	}
 	return 0;
 }

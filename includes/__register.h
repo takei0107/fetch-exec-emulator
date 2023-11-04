@@ -15,7 +15,8 @@ typedef enum {
 	SIG_DEFAULT,
 	SIG_ADD,
 	SIG_STORE,
-	SIG_LOAD
+	SIG_LOAD,
+	SIG_SAVE
 } CTR_SIGNAL;
 
 typedef struct {

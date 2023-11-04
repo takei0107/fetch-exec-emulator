@@ -4,7 +4,7 @@
 #include<stdint.h>
 
 #include"__register.h"
-#include"__instruction.h"
+#include"__memory.h"
 
 #define INS_SIZE 32
 
@@ -34,6 +34,6 @@ typedef struct {
 	register_number_t dst   : DST_REG_SIZE;
 } ins_decoded_t;
 
-ins_decoded_t decode(ins_raw_t ins_raw);
+ins_decoded_t decode(memory_data_out_t ins_raw);
 
 #endif
