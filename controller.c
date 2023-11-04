@@ -31,6 +31,13 @@ void controller_opcode_received(controller_t *controller, uint8_t raw_opcode)
 			multiplexer_signal_received(controller->data_path->m3, USE_DATA_ONE);
 			memory_signal_received(MEM_SIG_READ);
 			break;
+		case JUMP:
+			register_unit_signal_received(controller->data_path->register_unit, SIG_ADD);
+			multiplexer_signal_received(controller->data_path->m1, USE_DATA_ONE);
+			multiplexer_signal_received(controller->data_path->m2, USE_DATA_TWO);
+			multiplexer_signal_received(controller->data_path->m3, USE_DATA_TWO);
+			memory_signal_received(MEM_SIG_NOOP);
+			break;
 	}
 }
 

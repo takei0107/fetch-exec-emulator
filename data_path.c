@@ -16,7 +16,7 @@ data_path_t *init_data_path(data_path_init_params_t params)
 
 	data_path->memory_pgm = params.memory_pgm_ptr;
 	data_path->memory_data = params.memory_data_ptr;
-	
+
 	// レジスタユニット初期化
 	data_path->register_unit = init_register_unit();
 
@@ -45,7 +45,7 @@ int data_path_exec(data_path_t *data_path)
 	multiplexer_in_out_t multiplexer_out;
 	alu_out_t alu_out;
 	data_in_t data_in = 0;
-	
+
 	pgm_end_addr = data_path->pgm_ctr->pgm_end_addr;
 
 	// クロック/ループ一回
@@ -55,15 +55,15 @@ int data_path_exec(data_path_t *data_path)
 		decoded = decode(ins_raw);
 #ifndef NDEBUG
 		// debug
-		printf("\n");
-		printf("##############################################\n");
-		printf("ins:    0x%08x\n", ins_raw);
-		printf("opcode: 0x%08x\n", decoded.opcode);
-		printf("regA:   0x%08x\n", decoded.regA);
-		printf("regB:   0x%08x\n", decoded.regB);
-		printf("dst:    0x%08x\n", decoded.dst);
-		printf("offset: 0x%08x\n", decoded.offset);
-		printf("##############################################\n");
+		//printf("\n");
+		//printf("##############################################\n");
+		//printf("ins:    0x%08x\n", ins_raw);
+		//printf("opcode: 0x%08x\n", decoded.opcode);
+		//printf("regA:   0x%08x\n", decoded.regA);
+		//printf("regB:   0x%08x\n", decoded.regB);
+		//printf("dst:    0x%08x\n", decoded.dst);
+		//printf("offset: 0x%08x\n", decoded.offset);
+		//printf("##############################################\n");
 #endif
 		data_path->on_decoded(decoded);
 
@@ -92,8 +92,10 @@ int data_path_exec(data_path_t *data_path)
 			register_unit_in.dst = decoded.dst;
 
 			register_unit_perform(data_path->register_unit, register_unit_in);
+		} else if((OPCODE)decoded.opcode == JUMP) {
+			multiplexer_out = multiplexer_data_received(data_path->m1, alu_out, data_path->pgm_ctr->ptr);
+			data_path->pgm_ctr->ptr = multiplexer_out;
 		}
-
 		
 	}
 	return 0;
