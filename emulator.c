@@ -21,7 +21,8 @@ typedef struct {
 static memory_t init_memory(const size_t size)
 {
 	memory_t memory;
-	memory= (memory_t)malloc(sizeof(size));
+	memory = (memory_t)malloc(size);
+	memset(memory, 0, sizeof(memory));
 	return memory;
 }
 

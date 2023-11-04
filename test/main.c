@@ -18,11 +18,11 @@ int main()
 	uint32_t test_end = 0x00000010;
 	test_param.pgm_start_addr = test_start;
 	test_param.pgm_end_addr = test_end;
-	test_param.pgm_size = 4;
+	test_param.pgm_size = 32;
 
 	test_param.test_memory = init_memory(MEMORY_SIZE_ALL);
-	test_param.test_memory[16].val = 4;
-	test_param.test_memory[17].val = 7;
+	test_param.test_memory[128].val = 4;
+	test_param.test_memory[129].val = 7;
 
 	ins = 0b00010000000000001000000000000000;
 	test_param.test_memory[0].val = (ins & 0x000000ff);
@@ -46,6 +46,6 @@ int main()
 	test_param.test_memory[15].val = (ins & 0xff000000) >> 24;
 
 	emulator_run(test_param, MEMORY_SIZE_ALL);
-	assert(test_param.test_memory[18].val == 11);
+	assert(test_param.test_memory[130].val == 11);
 
 }
