@@ -1,8 +1,20 @@
 CC = gcc
-BIN = cpu.out
+FLAGS = -Wall -mcmodel=large -I./includes
 
-cpu.out: *.c
-	$(CC) -o $(BIN) __cpu_emu.c -mcmodel=large
+SRCS = data_path.c controller.c cpu.c __*.c
 
-test: cpu.out
-	./$(BIN)
+PROG = emulator.out
+PROGSRCS = $(SRCS) emulator.c
+
+TEST = ./test/test.out
+TESTSRCS = $(SRCS) ./test/main.c
+
+
+test: $(TEST)
+	./$(TEST)
+
+$(TEST): $(TESTSRCS) emulator.c
+	$(CC) $(FLAGS) $(TESTSRCS) -o $(TEST)
+
+$(PROG): $(PROGSRCS)
+	$(CC) $(FLAGS) -DNDEBUG $(PROGSRCS) -o $(PROG)
