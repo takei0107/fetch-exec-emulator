@@ -110,4 +110,5 @@ int main()
 	assert(test_param.test_memory[133].val == 89);
 	assert(test_param.test_memory[134].val == 100);
 
+	return 0;
 }
